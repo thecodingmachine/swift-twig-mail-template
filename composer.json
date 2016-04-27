@@ -19,7 +19,7 @@
 
   "require": {
     "php": ">=7.0.0",
-    "thecodingmachine/swift-mail-template-interface" : "dev-master",
+    "thecodingmachine/swift-mail-template-interface" : "^5.0",
     "twig/twig" : "~1.0"
 
   },
