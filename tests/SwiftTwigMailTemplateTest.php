@@ -11,7 +11,7 @@ class SwiftTwigMailTemplateTest extends \PHPUnit_Framework_TestCase
         $twigEnvironnement = new \Twig_Environment(new \Twig_Loader_Filesystem([__DIR__.'/TestTemplate']));
         $swiftTwigMailGenerator = new SwiftTwigMailTemplate($twigEnvironnement, 'UnvalidTemplate.twig');
         $this->expectException(MissingBlockException::class);
-        $swiftTwigMailGenerator->getMail();
+        $swiftTwigMailGenerator->renderMail();
     }
 
     public function testValidTemplate()

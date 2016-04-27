@@ -2,9 +2,10 @@
 
 namespace TheCodingMachine\Mail\Template;
 
+
 use TheCodingMachine\Mail\SwiftMailTemplate;
 
-class SwiftTwigMailGenerator implements SwiftMailTemplate
+class SwiftTwigMailTemplate implements SwiftMailTemplate
 {
     /**
      * @var \Twig_Environment
