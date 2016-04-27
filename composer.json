@@ -1,0 +1,31 @@
+{
+  "name": "thecodingmachine/swift-twig-mail-template",
+  "description": "This package contains a implementation of the SwiftMailTemplate interface which use twig to render the mail message.",
+  "keywords": ["swift", "twig","mail"],
+  "homepage": "https://github.com/thecodingmachine/swift-twig-mail-template",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Xavier Huberty",
+      "email": "x.huberty@thecodingmachine.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "TheCodingMachine\\Mail\\Template\\": "src"
+    }
+  },
+
+  "require": {
+    "php": ">=7.0.0",
+    "thecodingmachine/swift-mail-template-interface" : "dev-master",
+    "twig/twig" : "~1.0"
+
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~5.0"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
