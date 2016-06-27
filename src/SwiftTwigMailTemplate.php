@@ -2,7 +2,6 @@
 
 namespace TheCodingMachine\Mail\Template;
 
-
 use TheCodingMachine\Mail\SwiftMailTemplate;
 
 class SwiftTwigMailTemplate implements SwiftMailTemplate
@@ -20,7 +19,7 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
     /**
      * @var string|array
      */
-    protected $fromAdresses;
+    protected $fromAddresses;
 
     /**
      * @var string
@@ -30,7 +29,7 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
     /**
      * @var string|array
      */
-    protected $toAdresses;
+    protected $toAddresses;
 
     /**
      * @var string
@@ -40,7 +39,7 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
     /**
      * @var string|array
      */
-    protected $bccAdresses;
+    protected $bccAddresses;
 
     /**
      * @var string
@@ -50,7 +49,7 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
     /**
      * @var string|array
      */
-    protected $ccAdresses;
+    protected $ccAddresses;
 
     /**
      * @var string
@@ -60,7 +59,7 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
     /**
      * @var string|array
      */
-    protected $replyToAdresses;
+    protected $replyToAddresses;
 
     /**
      * @var string
@@ -116,62 +115,55 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
 
         $template = $twigEnvironment->loadTemplate($this->twigPath);
 
-        if (!$template->hasBlock('subject') || !$template->hasBlock('body_html') || !$template->hasBlock('body_text')) {
-            //TODO extract body_text from body HTML
+        if (!$template->hasBlock('subject') || !$template->hasBlock('body_html')) {
             throw MissingBlockException::missingBlock($template->getBlockNames());
         }
 
-        $subject  = $template->renderBlock('subject', $data);
+        $subject = $template->renderBlock('subject', $data);
         $bodyHtml = $template->renderBlock('body_html', $data);
-        $bodyText = $template->renderBlock('body_text', $data);
+        if (!$template->hasBlock('body_text')) {
+            $bodyText = $this->removeHtml($bodyHtml);
+        } else {
+            $bodyText = $template->renderBlock('body_text', $data);
+        }
 
         $mail->setSubject($subject);
         $mail->setBody($bodyHtml);
         $mail->addPart($bodyText);
 
-        if ($this->fromAdresses) {
-            $mail->setFrom($this->fromAdresses, $this->fromName);
-            $mail->setSender($this->fromAdresses, $this->fromName);
-        }
-
-        if ($this->toAdresses) {
-            $mail->setTo($this->toAdresses, $this->toName);
-        }
-
-        if ($this->bccAdresses) {
-            $mail->setBcc($this->bccAdresses, $this->bccName);
-        }
-        if ($this->ccAdresses) {
-            $mail->setCc($this->ccAdresses, $this->ccName);
-        }
-        if ($this->replyToAdresses) {
-            $mail->setReplyTo($this->replyToAdresses, $this->replyToName);
-        }
-
-        if ($this->maxLineLength) {
-            $mail->setMaxLineLength($this->maxLineLength);
-        }
-        if ($this->priority) {
-            $mail->setPriority($this->priority);
-        }
-
-        if ($this->readReceiptTo) {
-            $mail->setReadReceiptTo($this->readReceiptTo);
-        }
-
-        if ($this->returnPath) {
-            $mail->setReturnPath($this->returnPath);
+        switch (true) {
+            case $this->fromAddresses:
+                $mail->setFrom($this->fromAddresses, $this->fromName);
+                $mail->setSender($this->fromAddresses, $this->fromName);
+            case $this->toAddresses:
+                $mail->setTo($this->toAddresses, $this->toName);
+            case $this->bccAddresses:
+                $mail->setBcc($this->bccAddresses, $this->bccName);
+            case $this->ccAddresses:
+                $mail->setCc($this->ccAddresses, $this->ccName);
+            case $this->replyToAddresses:
+                $mail->setReplyTo($this->replyToAddresses, $this->replyToName);
+            case $this->maxLineLength:
+                $mail->setMaxLineLength($this->maxLineLength);
+            case $this->priority:
+                $mail->setPriority($this->priority);
+            case $this->readReceiptTo:
+                $mail->setReadReceiptTo($this->readReceiptTo);
+            case $this->returnPath:
+                $mail->setReturnPath($this->returnPath);
+            default:
+                break;
         }
 
         return $mail;
     }
 
     /**
-     * @param array|string $fromAdresses
+     * @param array|string $fromAddresses
      */
-    public function setFromAdresses($fromAdresses)
+    public function setFromAddresses($fromAddresses)
     {
-        $this->fromAdresses = $fromAdresses;
+        $this->fromAddresses = $fromAddresses;
     }
 
     /**
@@ -183,11 +175,11 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
     }
 
     /**
-     * @param array|string $toAdresses
+     * @param array|string $toAddresses
      */
-    public function setToAdresses($toAdresses)
+    public function setToAddresses($toAddresses)
     {
-        $this->toAdresses = $toAdresses;
+        $this->toAddresses = $toAddresses;
     }
 
     /**
@@ -199,11 +191,11 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
     }
 
     /**
-     * @param array|string $bccAdresses
+     * @param array|string $bccAddresses
      */
-    public function setBccAdresses($bccAdresses)
+    public function setBccAddresses($bccAddresses)
     {
-        $this->bccAdresses = $bccAdresses;
+        $this->bccAddresses = $bccAddresses;
     }
 
     /**
@@ -215,11 +207,11 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
     }
 
     /**
-     * @param array|string $ccAdresses
+     * @param array|string $ccAddresses
      */
-    public function setCcAdresses($ccAdresses)
+    public function setCcAddresses($ccAddresses)
     {
-        $this->ccAdresses = $ccAdresses;
+        $this->ccAddresses = $ccAddresses;
     }
 
     /**
@@ -231,11 +223,11 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
     }
 
     /**
-     * @param array|string $replyToAdresses
+     * @param array|string $replyToAddresses
      */
-    public function setReplyToAdresses($replyToAdresses)
+    public function setReplyToAddresses($replyToAddresses)
     {
-        $this->replyToAdresses = $replyToAdresses;
+        $this->replyToAddresses = $replyToAddresses;
     }
 
     /**
@@ -276,5 +268,96 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
     public function setReturnPath($returnPath)
     {
         $this->returnPath = $returnPath;
+    }
+
+    /**
+     * Removes the HTML tags from the text.
+     *
+     * @param string $s
+     * @param string $keep   The list of tags to keep
+     * @param string $expand The list of tags to remove completely, along their content
+     */
+    private function removeHtml(string $s, string $keep = '', string $expand = 'script|style|noframes|select|option') :string
+    {
+        /**///prep the string
+        $s = ' '.$s;
+
+        /**///initialize keep tag logic
+        if (strlen($keep) > 0) {
+            $k = explode('|', $keep);
+            $s = $this->keepTag($s, $k, '<', '[{(');
+        }
+        //begin removal
+        /**///remove comment blocks
+        $s = $this->removeElement($s, '<!--', '-->');
+
+        /**///remove tags with content between them
+        if (strlen($expand) > 0) {
+            $e = explode('|', $expand);
+            $count = count($e);
+            $pos = [];
+            $len = [];
+            for ($i = 0;$i < $count;++$i) {
+                while (stripos($s, '<'.$e[$i]) > 0) {
+                    $len[1] = strlen('<'.$e[$i]);
+                    $pos[1] = stripos($s, '<'.$e[$i]);
+                    $pos[2] = stripos($s, $e[$i].'>', $pos[1] + $len[1]);
+                    $len[2] = $pos[2] - $pos[1] + $len[1];
+                    $x = substr($s, $pos[1], $len[2]);
+                    $s = str_replace($x, '', $s);
+                }
+            }
+        }
+
+        /**///remove remaining tags
+        $s = $this->removeElement($s, '<', '>');
+
+        /**///finalize keep tag
+        if (isset($k)) {
+            $s = $this->keepTag($s, $k, '[{(', '<');
+        }
+
+        return trim($s);
+    }
+
+    /**
+     * @param string $s
+     * @param string $openTag
+     * @param string $closeTag
+     *
+     * @return mixed|string
+     */
+    private function removeElement(string $s, string $openTag, string $closeTag)
+    {
+        $pos = [];
+        $len = [];
+        while (stripos($s, $openTag) > 0) {
+            $pos[1] = stripos($s, $openTag);
+            $pos[2] = stripos($s, $closeTag, $pos[1]);
+            $len[1] = $pos[2] - $pos[1] + 1;
+            $x = substr($s, $pos[1], $len[1]);
+            $s = str_replace($x, '', $s);
+        }
+
+        return $s;
+    }
+
+    /**
+     * @param string $s
+     * @param array  $tagToKeep
+     * @param string $initial
+     * @param string $finalize
+     *
+     * @return string
+     */
+    private function keepTag(string $s, array $tagToKeep, string $initial, string $finalize):string
+    {
+        $count = count($tagToKeep);
+        for ($i = 0;$i < $count;++$i) {
+            $s = str_replace($initial.$tagToKeep[$i], $finalize.$tagToKeep[$i], $s);
+            $s = str_replace($initial.'/'.$tagToKeep[$i], $finalize.'/'.$tagToKeep[$i], $s);
+        }
+
+        return $s;
     }
 }
