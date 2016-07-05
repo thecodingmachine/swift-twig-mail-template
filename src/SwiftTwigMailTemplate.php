@@ -128,8 +128,8 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
         }
 
         $mail->setSubject($subject);
-        $mail->setBody($bodyHtml);
-        $mail->addPart($bodyText);
+        $mail->setBody($bodyHtml, 'text/html');
+        $mail->addPart($bodyText, 'text/plain');
 
         switch (true) {
             case $this->fromAddresses:
