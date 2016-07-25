@@ -115,21 +115,28 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
 
         $template = $twigEnvironment->loadTemplate($this->twigPath);
 
-        if (!$template->hasBlock('subject') || !$template->hasBlock('body_html')) {
+        if (!$template->hasBlock('subject') || (!$template->hasBlock('body_html') && !$template->hasBlock('body_text'))) {
             throw MissingBlockException::missingBlock($template->getBlockNames());
         }
 
         $subject = $template->renderBlock('subject', $data);
-        $bodyHtml = $template->renderBlock('body_html', $data);
-        if (!$template->hasBlock('body_text')) {
-            $bodyText = $this->removeHtml($bodyHtml);
+        $mail->setSubject($subject);
+
+        if ($template->hasBlock('body_html')) {
+            $bodyHtml = $template->renderBlock('body_html', $data);
+            if (!$template->hasBlock('body_text')) {
+                $bodyText = $this->removeHtml($bodyHtml);
+            } else {
+                $bodyText = $template->renderBlock('body_text', $data);
+            }
+
+            $mail->setBody($bodyHtml, 'text/html');
+            $mail->addPart($bodyText, 'text/plain');
         } else {
             $bodyText = $template->renderBlock('body_text', $data);
-        }
 
-        $mail->setSubject($subject);
-        $mail->setBody($bodyHtml, 'text/html');
-        $mail->addPart($bodyText, 'text/plain');
+            $mail->setBody($bodyText, 'text/plain');
+        }
 
         switch (true) {
             case $this->fromAddresses:

@@ -6,10 +6,10 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 class SwiftTwigMailTemplateTest extends \PHPUnit_Framework_TestCase
 {
-    public function testUnvalidTemplate()
+    public function testInvalidTemplate()
     {
         $twigEnvironnement = new \Twig_Environment(new \Twig_Loader_Filesystem([__DIR__.'/TestTemplate']));
-        $swiftTwigMailGenerator = new SwiftTwigMailTemplate($twigEnvironnement, 'UnvalidTemplate.twig');
+        $swiftTwigMailGenerator = new SwiftTwigMailTemplate($twigEnvironnement, 'InvalidTemplate.twig');
         $this->expectException(MissingBlockException::class);
         $swiftTwigMailGenerator->renderMail();
     }
@@ -46,5 +46,26 @@ class SwiftTwigMailTemplateTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['shelDon@thecodingmachine.com' => 'ShelDon'], $message->getReplyTo());
         $this->assertEquals(1, $message->getPriority());
         $this->assertEquals(999, $message->getMaxLineLength());
+    }
+
+    public function testOnlyBodyTemplate()
+    {
+        $twigEnvironnement = new \Twig_Environment(new \Twig_Loader_Filesystem([__DIR__.'/TestTemplate']));
+        $swiftTwigMailGenerator = new SwiftTwigMailTemplate($twigEnvironnement, 'OnlyTextTemplate.twig');
+
+        $message = $swiftTwigMailGenerator->renderMail(['name' => 'ShelDon']);
+
+        $this->assertEquals('This is the text body.', $message->getBody());
+    }
+
+    public function testOnlyHtmlTemplate()
+    {
+        $twigEnvironnement = new \Twig_Environment(new \Twig_Loader_Filesystem([__DIR__.'/TestTemplate']));
+        $swiftTwigMailGenerator = new SwiftTwigMailTemplate($twigEnvironnement, 'OnlyHtmlTemplate.twig');
+
+        $message = $swiftTwigMailGenerator->renderMail(['name' => 'ShelDon']);
+
+        $this->assertEquals('This is the <strong>HTML body</strong>.', $message->getBody());
+        $this->assertEquals('This is the HTML body.', $message->getChildren()[0]->getBody());
     }
 }
