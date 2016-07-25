@@ -7,7 +7,7 @@
 
 # Swift Twig Mail Generator
 
-This package takes a Twig template and generates a Switf mail from this template.
+This package takes a Twig template and generates a Swift mail from this template.
 
 ## Installation
 
@@ -42,6 +42,19 @@ If you want you can add another block containing your text body. This block is o
     Body without HTML.
 {% endblock %}
 ```
+
+Also, you can create a mail with a text body only (and no HTML):
+
+```twig
+{% block subject %}
+    Your suject
+{% endblock %}
+
+{% block body_text %}
+    Body with text only.
+{% endblock %}
+```
+
 
 Now, let's create a `SwiftTwigMailTemplate` instance. This object will generate a `SwiftMail` from the twig template.
 
