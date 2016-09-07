@@ -73,6 +73,22 @@ $swiftMail->setTo('recipient@example.com');
 $mailer->send($swiftMail);
 ```
 
+You can also embed images directly into the email by using the embedImage function. By embedding an image into the email, most mail clients will display the image directly without printing the traditional warning.
+
+Note: embedImage expects one parameter: the full path to the image file.
+
+```twig
+{% block subject %}
+    Welcome !
+{% endblock %}
+
+{% block body_html %}
+    <img src="{{ embedImage(constant('ROOT_PATH')~'/public/img/header.png') }}" alt="header">
+
+    <h1>Hello World!</h1>
+{% endblock %}
+```
+
 ### Going further
 
 The `SwiftTwigMailTemplate` class has been designed with dependency injection in mind. Instances can be easily put in your container for easy reuse.
