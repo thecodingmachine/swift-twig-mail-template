@@ -138,29 +138,35 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
             $mail->setBody($bodyText, 'text/plain');
         }
 
-        switch (true) {
-            case $this->fromAddresses:
-                $mail->setFrom($this->fromAddresses, $this->fromName);
-                $mail->setSender($this->fromAddresses, $this->fromName);
-            case $this->toAddresses:
-                $mail->setTo($this->toAddresses, $this->toName);
-            case $this->bccAddresses:
-                $mail->setBcc($this->bccAddresses, $this->bccName);
-            case $this->ccAddresses:
-                $mail->setCc($this->ccAddresses, $this->ccName);
-            case $this->replyToAddresses:
-                $mail->setReplyTo($this->replyToAddresses, $this->replyToName);
-            case $this->maxLineLength:
-                $mail->setMaxLineLength($this->maxLineLength);
-            case $this->priority:
-                $mail->setPriority($this->priority);
-            case $this->readReceiptTo:
-                $mail->setReadReceiptTo($this->readReceiptTo);
-            case $this->returnPath:
-                $mail->setReturnPath($this->returnPath);
-            default:
-                break;
-        }
+    if( $this->fromAddresses) {
+        $mail->setFrom($this->fromAddresses, $this->fromName);
+        $mail->setSender($this->fromAddresses, $this->fromName);
+    }
+    if( $this->toAddresses) {
+        $mail->setTo($this->toAddresses, $this->toName);
+    }
+    if( $this->bccAddresses) {
+        $mail->setBcc($this->bccAddresses, $this->bccName);
+    }
+    if( $this->ccAddresses) {
+        $mail->setCc($this->ccAddresses, $this->ccName);
+    }
+    if( $this->replyToAddresses) {
+        $mail->setReplyTo($this->replyToAddresses, $this->replyToName);
+    }
+    if( $this->maxLineLength) {
+        $mail->setMaxLineLength($this->maxLineLength);
+    }
+    if( $this->priority) {
+        $mail->setPriority($this->priority);
+    }
+    if( $this->readReceiptTo) {
+        $mail->setReadReceiptTo($this->readReceiptTo);
+    }
+    if( $this->returnPath) {
+        $mail->setReturnPath($this->returnPath);
+    }
+
 
         return $mail;
     }
