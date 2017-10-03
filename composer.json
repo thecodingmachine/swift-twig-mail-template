@@ -20,11 +20,11 @@
   "require": {
     "php": ">=7.0.0",
     "thecodingmachine/swift-mail-template-interface" : "^5.0",
-    "twig/twig" : "~1.0"
+    "twig/twig" : "~1.27 || ~2.0"
 
   },
   "require-dev": {
-    "phpunit/phpunit": "~5.0"
+    "phpunit/phpunit": "^5.7.22"
   },
   "minimum-stability": "dev",
   "prefer-stable": true

@@ -2,9 +2,15 @@ language: php
 
 php:
  - 7.0
+ - 7.1
+
+env:
+  matrix:
+  - PREFER_LOWEST=""
+  - PREFER_LOWEST="--prefer-lowest"
 
 before_script:
- - composer install
+ - composer update --no-interaction $PREFER_LOWEST
 
 script:
  - ./vendor/bin/phpunit
