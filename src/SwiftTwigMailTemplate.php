@@ -117,7 +117,7 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
         $context = $twigEnvironment->mergeGlobals($data);
 
         if (!$template->hasBlock('subject', $context) || (!$template->hasBlock('body_html', $context) && !$template->hasBlock('body_text', $context))) {
-            throw MissingBlockException::missingBlock($template->getBlockNames());
+            throw MissingBlockException::missingBlock($template->getBlockNames($context, []));
         }
 
         $subject = $template->renderBlock('subject', $data);
