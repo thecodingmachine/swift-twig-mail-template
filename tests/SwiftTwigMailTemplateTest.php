@@ -68,4 +68,19 @@ class SwiftTwigMailTemplateTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('This is the <strong>HTML body</strong>.', $message->getBody());
         $this->assertEquals('This is the HTML body.', $message->getChildren()[0]->getBody());
     }
+
+    /**
+     * Tests rendering a mail twice to see if extension is added only once.
+     */
+    public function testMailTwice()
+    {
+        $twigEnvironnement = new \Twig_Environment(new \Twig_Loader_Filesystem([__DIR__.'/TestTemplate']));
+        $swiftTwigMailGenerator = new SwiftTwigMailTemplate($twigEnvironnement, 'OnlyHtmlTemplate.twig');
+
+        $message = $swiftTwigMailGenerator->renderMail(['name' => 'Mouf']);
+        $message = $swiftTwigMailGenerator->renderMail(['name' => 'Mouf']);
+
+        $this->assertEquals('This is the <strong>HTML body</strong>.', $message->getBody());
+        $this->assertEquals('This is the HTML body.', $message->getChildren()[0]->getBody());
+    }
 }
