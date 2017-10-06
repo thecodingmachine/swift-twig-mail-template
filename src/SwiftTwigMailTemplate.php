@@ -107,14 +107,17 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
     {
         $mail = new \Swift_Message();
 
-        $twigEnvironment = clone $this->twigEnvironment;
-        $function = new \Twig_SimpleFunction('embedImage', function ($imgPath) use ($mail) {
-            return $mail->embed(\Swift_Image::fromPath($imgPath));
-        });
-        $twigEnvironment->addFunction($function);
+        if (!$this->twigEnvironment->hasExtension(TwigMailExtension::class)) {
+            $this->twigEnvironment->addExtension(new TwigMailExtension());
+        }
 
-        $template = $twigEnvironment->loadTemplate($this->twigPath);
-        $context = $twigEnvironment->mergeGlobals($data);
+        $twigMailExtension = $this->twigEnvironment->getExtension(TwigMailExtension::class);
+        /* @var $twigMailExtension TwigMailExtension */
+
+        $twigMailExtension->pushMessage($mail);
+
+        $template = $this->twigEnvironment->loadTemplate($this->twigPath);
+        $context = $this->twigEnvironment->mergeGlobals($data);
 
         if (!$template->hasBlock('subject', $context) || (!$template->hasBlock('body_html', $context) && !$template->hasBlock('body_text', $context))) {
             throw MissingBlockException::missingBlock($template->getBlockNames($context, []));
@@ -139,35 +142,36 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
             $mail->setBody($bodyText, 'text/plain');
         }
 
-    if( $this->fromAddresses) {
-        $mail->setFrom($this->fromAddresses, $this->fromName);
-        $mail->setSender($this->fromAddresses, $this->fromName);
-    }
-    if( $this->toAddresses) {
-        $mail->setTo($this->toAddresses, $this->toName);
-    }
-    if( $this->bccAddresses) {
-        $mail->setBcc($this->bccAddresses, $this->bccName);
-    }
-    if( $this->ccAddresses) {
-        $mail->setCc($this->ccAddresses, $this->ccName);
-    }
-    if( $this->replyToAddresses) {
-        $mail->setReplyTo($this->replyToAddresses, $this->replyToName);
-    }
-    if( $this->maxLineLength) {
-        $mail->setMaxLineLength($this->maxLineLength);
-    }
-    if( $this->priority) {
-        $mail->setPriority($this->priority);
-    }
-    if( $this->readReceiptTo) {
-        $mail->setReadReceiptTo($this->readReceiptTo);
-    }
-    if( $this->returnPath) {
-        $mail->setReturnPath($this->returnPath);
-    }
+        if( $this->fromAddresses) {
+            $mail->setFrom($this->fromAddresses, $this->fromName);
+            $mail->setSender($this->fromAddresses, $this->fromName);
+        }
+        if( $this->toAddresses) {
+            $mail->setTo($this->toAddresses, $this->toName);
+        }
+        if( $this->bccAddresses) {
+            $mail->setBcc($this->bccAddresses, $this->bccName);
+        }
+        if( $this->ccAddresses) {
+            $mail->setCc($this->ccAddresses, $this->ccName);
+        }
+        if( $this->replyToAddresses) {
+            $mail->setReplyTo($this->replyToAddresses, $this->replyToName);
+        }
+        if( $this->maxLineLength) {
+            $mail->setMaxLineLength($this->maxLineLength);
+        }
+        if( $this->priority) {
+            $mail->setPriority($this->priority);
+        }
+        if( $this->readReceiptTo) {
+            $mail->setReadReceiptTo($this->readReceiptTo);
+        }
+        if( $this->returnPath) {
+            $mail->setReturnPath($this->returnPath);
+        }
 
+        $twigMailExtension->popMessage($mail);
 
         return $mail;
     }
