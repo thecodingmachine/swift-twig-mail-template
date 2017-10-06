@@ -12,7 +12,7 @@ class TwigMailExtension extends \Twig_Extension
      */
     private $messages = [];
 
-    public function pushMessage(Swift_Message $message): void
+    public function pushMessage(Swift_Message $message)
     {
         $this->messages[] = $message;
     }
@@ -35,7 +35,7 @@ class TwigMailExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_Function('embedImage', [$this, 'embedImage']),
+            new \Twig_SimpleFunction('embedImage', [$this, 'embedImage']),
         ];
     }
 
