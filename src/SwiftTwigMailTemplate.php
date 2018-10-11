@@ -2,6 +2,7 @@
 
 namespace TheCodingMachine\Mail\Template;
 
+use Mouf\Html\Renderer\Twig\TwigTemplate;
 use TheCodingMachine\Mail\SwiftMailTemplate;
 
 class SwiftTwigMailTemplate implements SwiftMailTemplate
@@ -87,15 +88,27 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
     protected $returnPath;
 
     /**
+     * @var string
+     */
+    protected $content;
+
+    /**
+     * @var string
+     */
+    private $twigContent;
+
+    /**
      * SwiftTwigMailGenerator constructor.
      *
      * @param \Twig_Environment $twig_Environment
-     * @param string            $twigPath
+     * @param string|null $twigPath
+     * @param string|null $twigContent
      */
-    public function __construct(\Twig_Environment $twig_Environment, string $twigPath)
+    public function __construct(\Twig_Environment $twig_Environment, string $twigPath = null, string $twigContent = null)
     {
         $this->twigEnvironment = $twig_Environment;
         $this->twigPath = $twigPath;
+        $this->twigContent = $twigContent;
     }
 
     /**
@@ -116,7 +129,11 @@ class SwiftTwigMailTemplate implements SwiftMailTemplate
 
         $twigMailExtension->pushMessage($mail);
 
-        $template = $this->twigEnvironment->loadTemplate($this->twigPath);
+        if (!empty($this->twigPath)) {
+            $template = $this->twigEnvironment->loadTemplate($this->twigPath);
+        } else if (!empty($this->twigContent)) {
+            $template = $this->twigEnvironment->createTemplate($this->twigContent);
+        }
         $context = $this->twigEnvironment->mergeGlobals($data);
 
         if (!$template->hasBlock('subject', $context) || (!$template->hasBlock('body_html', $context) && !$template->hasBlock('body_text', $context))) {
